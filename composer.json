@@ -1,0 +1,23 @@
+{
+    "$schema": "https://getcomposer.org/schema.json",
+    "name": "bagart/telegram-bot-basic-lib",
+    "type": "library",
+    "description": "Telegram Bot basic commands library",
+    "keywords": ["telegram", "bot", "commands"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "BAGArt",
+            "email": "baltaev.artur+lib@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.5",
+        "bagart/telegram-bot-lib": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "BAGArt\\TelegramBotBasic\\": "src/"
+        }
+    }
+}
