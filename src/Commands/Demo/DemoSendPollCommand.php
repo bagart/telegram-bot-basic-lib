@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BAGArt\TelegramBotBasic\Commands\Demo;
 
+use BAGArt\TelegramBot\Configs\TgBotConfig;
 use BAGArt\TelegramBot\Contracts\ApiCommunication\TgBotApiDTOClientContract;
 use BAGArt\TelegramBot\TgApi\Methods\DTO\SendPollMethodDTO;
 use BAGArt\TelegramBot\TgApi\Methods\Enum\SendPollPropTypeEnum;
@@ -31,17 +32,7 @@ class DemoSendPollCommand extends Command
         $chatId = $this->argument('chat_id');
         $question = $this->argument('question');
 
-        $answers = [];
-        do {
-            $answer = text(
-                label: empty($answers) ? 'First answer option' : 'Next answer option (leave empty to finish)',
-                placeholder: 'Type answer...',
-                required: empty($answers),
-            );
-            if ($answer !== null && $answer !== '') {
-                $answers[] = trim($answer);
-            }
-        } while ($answer !== null && $answer !== '');
+        $answers = $this->collectAnswers();
 
         if (count($answers) < 2) {
             $this->error('At least 2 answers required.');
@@ -55,9 +46,10 @@ class DemoSendPollCommand extends Command
 
         try {
             $this->info('Sending poll...');
+
             $response = $tgDTOClient->request(
-                $token,
-                new SendPollMethodDTO(
+                botConfig: new TgBotConfig(token: $token),
+                dto: new SendPollMethodDTO(
                     chatId: $chatId,
                     question: $question,
                     options: $answers,
@@ -87,5 +79,28 @@ class DemoSendPollCommand extends Command
         return [
             'chat_id' => 'Which chat ID for making new Poll?',
         ];
+    }
+
+    /**
+     * Collect poll answer options interactively.
+     *
+     * @return string[]
+     */
+    private function collectAnswers(): array
+    {
+        $answers = [];
+
+        do {
+            $answer = text(
+                label: empty($answers) ? 'First answer option' : 'Next answer option (leave empty to finish)',
+                placeholder: 'Type answer...',
+                required: empty($answers),
+            );
+            if ($answer !== null && $answer !== '') {
+                $answers[] = trim($answer);
+            }
+        } while ($answer !== null && $answer !== '');
+
+        return $answers;
     }
 }

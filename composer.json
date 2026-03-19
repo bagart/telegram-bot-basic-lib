@@ -1,14 +1,24 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
     "name": "bagart/telegram-bot-basic-lib",
-    "type": "library",
     "description": "Telegram Bot basic commands library",
-    "keywords": ["telegram", "bot", "commands"],
+    "type": "library",
     "license": "MIT",
+    "keywords": [
+        "ASK",
+        "async",
+        "pipeline",
+        "client",
+        "execution-engine",
+        "fiber",
+        "transport",
+        "runtime",
+        "future"
+    ],
     "authors": [
         {
-            "name": "BAGArt",
-            "email": "baltaev.artur+lib@gmail.com"
+            "name": "BAGArt (Artur Baltaev)",
+            "email": "baltaev.artur+ask@gmail.com"
         }
     ],
     "require": {
@@ -19,5 +29,13 @@
         "psr-4": {
             "BAGArt\\TelegramBotBasic\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BAGArt\\TelegramBotBasic\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "composer exec pest tests --colors=always"
     }
 }
