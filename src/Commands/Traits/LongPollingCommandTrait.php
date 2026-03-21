@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace BAGArt\TelegramBotBasic\Commands\Traits;
 
-use BAGArt\TelegramBot\ApiCommunication\Exceptions\TgApiNetworkException;
+use BAGArt\TelegramBot\ApiCommunication\Exceptions\TgApiCommunicationException;
 use BAGArt\TelegramBot\Contracts\ApiCommunication\TgBotApiDTOClientContract;
 use BAGArt\TelegramBot\Exceptions\TgApiUserBreakeException;
 use BAGArt\TelegramBot\TgApi\Methods\DTO\GetUpdatesMethodDTO;
@@ -15,6 +15,7 @@ use Illuminate\Console\Command;
 /** @mixin Command */
 trait LongPollingCommandTrait
 {
+    protected bool $keepRunning = true;
     protected int $barInterval = 1;
 
     /**
@@ -34,12 +35,12 @@ trait LongPollingCommandTrait
         float|int $delayOnFn = 0,
     ): int {
         $delayOnErr = 5;
-        $this->info('Telegram bot started. Press Ctrl+C to stop.');
+        $this->output->info('Telegram bot started. Press Ctrl+C to stop.');
 
         $this->trap(SIGINT, function (): void {
             $this->keepRunning = false;
-            $this->newLine();
-            $this->info('Stopping...');
+            $this->output->newLine();
+            $this->output->info('Stopping...');
 
             throw new TgApiUserBreakeException(GetUpdatesMethodDTO::tgApiEntity()->name);
         });
@@ -61,13 +62,13 @@ trait LongPollingCommandTrait
                     );
                 } catch (TgApiUserBreakeException $e) {
                     return static::FAILURE;
-                } catch (TgApiNetworkException $e) {
-                    $msg = '[INFO] Tg Api Connection '.$e::class." while LongPolling: {$e->getMessage()}";
+                } catch (TgApiCommunicationException $e) {
+                    $msg = 'Tg Api Connection '.$e::class." while LongPolling: {$e->getMessage()}";
                     $logger->info($msg, [
                         'exception' => $e::class,
                         'message' => $e->getMessage(),
                     ]);
-                    $this->error($msg);
+                    $this->output->error($msg);
                     usleep($delayOnErr * 1000 * 1000);
                     $delayOnErr = min((int)($delayOnErr * 1.2 + 0.5), 30);
                 }
@@ -95,8 +96,8 @@ trait LongPollingCommandTrait
                                 }
                             } catch (TgApiUserBreakeException $e) {
                                 return static::FAILURE;
-                            } catch (TgApiNetworkException $e) {
-                                $msg = '[WARN] Tg Api Connection '.$e::class
+                            } catch (TgApiCommunicationException $e) {
+                                $msg = 'Tg Api Connection '.$e::class
                                     ." while run Response Reaction: {$e->getMessage()}";
                                 $logger->warning($msg, [
                                     'exception' => $e::class,
@@ -107,14 +108,14 @@ trait LongPollingCommandTrait
                                         "{$e->getFile()}:{$e->getLine()}\n{$e->getTraceAsString()}"
                                     ),
                                 ]);
-                                $this->error($msg);
+                                $this->output->error($msg);
                                 usleep($delayOnErr * 1000 * 1000);
                                 $delayOnErr = min((int)($delayOnErr * 1.2 + 0.5), 30);
                             } catch (\Throwable $e) {
                                 if ($noAck) {
                                     throw $e;
                                 }
-                                $msg = '[ERR] Tg Response Reaction '.$e::class." : {$e->getMessage()}";
+                                $msg = 'Tg Response Reaction '.$e::class." : {$e->getMessage()}";
                                 $logger->error($msg, [
                                     'exception' => $e::class,
                                     'message' => $e->getMessage(),
@@ -124,7 +125,7 @@ trait LongPollingCommandTrait
                                         "{$e->getFile()}:{$e->getLine()}\n{$e->getTraceAsString()}"
                                     ),
                                 ]);
-                                $this->error($msg);
+                                $this->output->error($msg);
                                 usleep($delayOnErr * 1000 * 1000);
                                 $delayOnErr = min((int)($delayOnErr * 1.2 + 0.5), 30);
                             }

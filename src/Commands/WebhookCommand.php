@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace BAGArt\TelegramBotBasic\Commands;
 
+use BAGArt\TelegramBot\BotServices\WebhookManager;
 use BAGArt\TelegramBot\Contracts\ApiCommunication\TgBotApiDTOClientContract;
 use BAGArt\TelegramBot\TgApi\Methods\DTO\GetMeMethodDTO;
 use BAGArt\TelegramBot\TgApi\Types\DTO\UserTypeDTO;
 use BAGArt\TelegramBot\TgApi\Types\DTO\WebhookInfoTypeDTO;
 use BAGArt\TelegramBotBasic\Commands\Traits\TokenResolverTrait;
-use BAGArt\TelegramBotBasic\TgApiServices\Webhook;
 use Illuminate\Console\Command;
 use Throwable;
 
@@ -47,7 +47,7 @@ class WebhookCommand extends Command
     ];
 
     public function handle(
-        Webhook $webhook,
+        WebhookManager $webhookManager,
         TgBotApiDTOClientContract $tgDTOClient,
     ): int {
         $token = $this->resolveToken();
@@ -55,10 +55,10 @@ class WebhookCommand extends Command
             return self::FAILURE;
         }
 
-        $currentInfo = $this->showCurrentState($webhook, $tgDTOClient, $token);
+        $currentInfo = $this->showCurrentState($webhookManager, $tgDTOClient, $token);
 
         if ($this->option('remove')) {
-            return $this->removeWebhook($webhook, $token);
+            return $this->removeWebhook($webhookManager, $token);
         }
 
         $url = $this->resolveOption(
@@ -94,7 +94,7 @@ class WebhookCommand extends Command
         $secretToken = $this->option('secret-token');
 
         try {
-            $webhook->set(
+            $webhookManager->set(
                 token: $token,
                 url: $url,
                 certificate: $certificate,
@@ -115,7 +115,7 @@ class WebhookCommand extends Command
     }
 
     private function showCurrentState(
-        Webhook $webhook,
+        WebhookManager $webhook,
         TgBotApiDTOClientContract $tgDTOClient,
         string $token,
     ): ?WebhookInfoTypeDTO {
@@ -124,7 +124,7 @@ class WebhookCommand extends Command
 
         try {
             $info = $webhook->get($token);
-            $this->displayWebhookInfo($info);
+            $this->displayWebhookInfo($info, $webhook);
 
             return $info;
         } catch (Throwable $e) {
@@ -149,23 +149,20 @@ class WebhookCommand extends Command
         }
     }
 
-    public function displayWebhookInfo(WebhookInfoTypeDTO $info): void
-    {
-        if ($info->url) {
-            $this->warn('URL: '.$info->url);
-            $this->line('Has custom certificate: '.($info->hasCustomCertificate ? 'yes' : 'no'));
-            $this->line('Pending updates: '.$info->pendingUpdateCount);
-            $this->line('Max connections: '.($info->maxConnections ?? 'default'));
-            $this->line('Allowed updates: '.($info->allowedUpdates ? json_encode($info->allowedUpdates) : 'all'));
-            $this->line('Last error: '.($info->lastErrorMessage ?: 'none'));
-            $this->line('IP address: '.($info->ipAddress ?? 'default'));
-        } else {
-            $this->warn('Webhook not set');
+    public function displayWebhookInfo(
+        WebhookInfoTypeDTO $info,
+        WebhookManager $webhookManager,
+    ): void {
+        $text = $webhookManager->buildTextInfo($info);
+
+        foreach (explode("\n", trim($text)) as $line) {
+            $this->line($line);
         }
+
         $this->newLine();
     }
 
-    private function removeWebhook(Webhook $webhook, string $token): int
+    private function removeWebhook(WebhookManager $webhook, string $token): int
     {
         try {
             $webhook->delete($token, $this->option('drop-pending'));

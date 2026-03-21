@@ -16,7 +16,6 @@ class TelegramBotBasicServiceProvider extends ServiceProvider
     protected array $commands = [
         WebhookCommand::class,
         TgPollerCommand::class,
-        TgDevDTOActualizeCommand::class,
         TgWhoamiCommand::class,
         DemoSendPollCommand::class,
     ];
@@ -28,6 +27,6 @@ class TelegramBotBasicServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        //
     }
 }

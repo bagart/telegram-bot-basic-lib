@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace BAGArt\TelegramBotBasic\Commands;
 
+use BAGArt\TelegramBot\BotServices\WebhookManager;
 use BAGArt\TelegramBot\Contracts\ApiCommunication\TgBotApiDTOClientContract;
 use BAGArt\TelegramBot\TgApi\Methods\DTO\SendMessageMethodDTO;
 use BAGArt\TelegramBot\TgApi\Types\DTO\UpdateTypeDTO;
@@ -11,7 +12,6 @@ use BAGArt\TelegramBot\Wrappers\TgBotLogWrapper;
 use BAGArt\TelegramBotBasic\Commands\Traits\ArtisanExtraTrait;
 use BAGArt\TelegramBotBasic\Commands\Traits\LongPollingCommandTrait;
 use BAGArt\TelegramBotBasic\Commands\Traits\TokenResolverTrait;
-use BAGArt\TelegramBotBasic\TgApiServices\Webhook;
 use Illuminate\Console\Command;
 use Throwable;
 
@@ -34,12 +34,10 @@ class TgPollerCommand extends Command
 
     protected $description = 'Start the Telegram bot in long-polling mode with Echo mode';
 
-    private bool $keepRunning = true;
-
     public function handle(
         TgBotApiDTOClientContract $tgDTOClient,
         TgBotLogWrapper $logger,
-        Webhook $webhook,
+        WebhookManager $webhookManager,
     ): int {
         $token = $this->resolveToken();
         if ($token === null) {
@@ -52,7 +50,7 @@ class TgPollerCommand extends Command
         $noAck = $this->option('no-ack');
 
         try {
-            $webhookInfo = $webhook->get($token);
+            $webhookInfo = $webhookManager->get($token);
             if ($webhookInfo->url) {
                 $this->warn("Webhook already exist: {$webhookInfo->url}");
                 if (
@@ -60,7 +58,7 @@ class TgPollerCommand extends Command
                     && !$this->option('once')
                     && $this->confirm('Is need to DeleteWebhook')
                 ) {
-                    $webhook->delete($token);
+                    $webhookManager->delete($token);
                 }
             } else {
                 $this->line('Webhook not set');
