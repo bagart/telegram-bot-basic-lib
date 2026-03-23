@@ -6,7 +6,7 @@ use BAGArt\TelegramBotBasic\Commands\Traits\ArtisanExtraTrait;
 use Illuminate\Console\Command;
 
 beforeEach(function () {
-    $this->command = new class extends Command {
+    $this->command = new class () extends Command {
         use ArtisanExtraTrait;
 
         protected $signature = 'test:extra';

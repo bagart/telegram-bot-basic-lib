@@ -6,7 +6,7 @@ namespace BAGArt\TelegramBotBasic\Commands\Traits;
 
 use BAGArt\TelegramBot\ApiCommunication\Exceptions\TgApiCommunicationException;
 use BAGArt\TelegramBot\Contracts\ApiCommunication\TgBotApiDTOClientContract;
-use BAGArt\TelegramBot\Exceptions\TgApiUserBreakeException;
+use BAGArt\TelegramBot\Exceptions\TgApiUserBreakException;
 use BAGArt\TelegramBot\TgApi\Methods\DTO\GetUpdatesMethodDTO;
 use BAGArt\TelegramBot\TgApi\Types\DTO\UpdateTypeDTO;
 use BAGArt\TelegramBot\Wrappers\TgBotLogWrapper;
@@ -42,7 +42,7 @@ trait LongPollingCommandTrait
             $this->output->newLine();
             $this->output->info('Stopping...');
 
-            throw new TgApiUserBreakeException(GetUpdatesMethodDTO::tgApiEntity()->name);
+            throw new TgApiUserBreakException(GetUpdatesMethodDTO::tgApiEntity()->name);
         });
         $bar = $this->output->createProgressBar($limit);
         $updateCount = 0;
@@ -60,7 +60,7 @@ trait LongPollingCommandTrait
                             allowedUpdates: $allowedUpdates,
                         )
                     );
-                } catch (TgApiUserBreakeException $e) {
+                } catch (TgApiUserBreakException $e) {
                     return static::FAILURE;
                 } catch (TgApiCommunicationException $e) {
                     $msg = 'Tg Api Connection '.$e::class." while LongPolling: {$e->getMessage()}";
@@ -94,7 +94,7 @@ trait LongPollingCommandTrait
                                 if ($delayOnFn > 0) {
                                     usleep((int)($delayOnFn * 1000 * 1000));
                                 }
-                            } catch (TgApiUserBreakeException $e) {
+                            } catch (TgApiUserBreakException $e) {
                                 return static::FAILURE;
                             } catch (TgApiCommunicationException $e) {
                                 $msg = 'Tg Api Connection '.$e::class
@@ -157,7 +157,7 @@ trait LongPollingCommandTrait
             }
 
             return self::SUCCESS;
-        } catch (TgApiUserBreakeException $e) {
+        } catch (TgApiUserBreakException $e) {
             return self::FAILURE;
         }
     }

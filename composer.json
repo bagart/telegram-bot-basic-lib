@@ -19,5 +19,13 @@
         "psr-4": {
             "BAGArt\\TelegramBotBasic\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "BAGArt\\TelegramBotBasic\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "../../../../vendor/bin/pest tests --colors=always"
     }
 }
