@@ -24,8 +24,8 @@ trait ArtisanExtraTrait
         if (!$dbg && !is_numeric($dbg)) {
             return;
         }
-        if (!$this->debug && $this->hasOption('debug')) {
-            $this->debug = $this->option('debug');
+        if (!$this->debug && $this->hasOption('dbg')) {
+            $this->debug = $this->option('dbg');
         }
         if (is_array($dbg)) {
             Log::debug(json_encode($dbg));

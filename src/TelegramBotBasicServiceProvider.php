@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace BAGArt\TelegramBotBasic;
 
 use BAGArt\TelegramBotBasic\Commands\Demo\DemoSendPollCommand;
+use BAGArt\TelegramBotBasic\Commands\TgChattingCommand;
 use BAGArt\TelegramBotBasic\Commands\TgPollerCommand;
 use BAGArt\TelegramBotBasic\Commands\TgWhoamiCommand;
 use BAGArt\TelegramBotBasic\Commands\WebhookCommand;
@@ -17,6 +18,7 @@ class TelegramBotBasicServiceProvider extends ServiceProvider
         TgPollerCommand::class,
         TgWhoamiCommand::class,
         DemoSendPollCommand::class,
+        TgChattingCommand::class,
     ];
 
     public function register(): void
