@@ -16,7 +16,7 @@ class TgWhoamiCommand extends Command
     use TokenResolverTrait;
 
     protected $signature = 'tg:whoami
-                            {token? : Telegram Bot Token}';
+                            {--token= : Telegram Bot Token}';
 
     protected $description = 'Method: getMe';
 

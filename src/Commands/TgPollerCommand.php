@@ -22,15 +22,15 @@ class TgPollerCommand extends Command
     use ArtisanExtraTrait;
 
     protected $signature = 'tg:poll
-                            {token?       : Telegram Bot Token}
+                            {--token=     : Telegram Bot Token}
                             {--echo       : ECHO-mode(ping-pong)}
                             {--show       : Show messages}
                             {--silent     : Do not ask about Delete WebHook}
                             {--timeout=30 : Long-polling server timeout in seconds}
                             {--limit=100  : Maximum updates per request (1–100)}
                             {--once       : Process one batch of updates and exit}
-                            {--no-ack     : Process one batch of updates and exit}
-                            {--debug      : Debug messages}';
+                            {--no-ack     : Do not send ack to Telegram (Process one batch of updates and exit)}
+                            {--dbg        : Debug messages}';
 
     protected $description = 'Start the Telegram bot in long-polling mode with Echo mode';
 
@@ -70,51 +70,55 @@ class TgPollerCommand extends Command
             return self::FAILURE;
         }
 
-        return $this->longPolling(
-            tgDTOClient: $tgDTOClient,
-            logger: $logger,
-            token: $token,
-            fn: function (
-                UpdateTypeDTO $update,
-                int $total,
-            ) use (
-                $tgDTOClient,
-                $token,
-                $echoMode,
-                $showMode,
-                $once,
-            ): ?bool {
-                if ($showMode) {
-                    if ($update->message) {
-                        $this->line("\t{$update->message->chat->id}: {$update->message->text}");
-                    } else {
-                        $bp = 1;//@todo
+        return $this
+            ->buildLongPoller(
+                tgDTOClient: $tgDTOClient,
+                logger: $logger,
+                token: $token,
+            )
+            ->run(
+                fn: function (
+                    UpdateTypeDTO $update,
+                    int $total,
+                ) use (
+                    $tgDTOClient,
+                    $token,
+                    $echoMode,
+                    $showMode,
+                    $once,
+                ): ?bool {
+                    $this->dbg($update);
+                    if ($showMode) {
+                        if ($update->message) {
+                            $this->line("\t{$update->message->chat->id}: {$update->message->text}");
+                        } else {
+                            $bp = 1;//@todo
+                        }
                     }
-                }
-                if ($echoMode) {
-                    if ($update->message) {
-                        $sendMessageResponse = $tgDTOClient->request(
-                            $token,
-                            new SendMessageMethodDTO(
-                                chatId: $update->message->chat->id,
-                                text: "echo: {$update->message->text}",
-                            ),
-                        );
-                        assert($sendMessageResponse->ok === true);
-                    } else {
-                        $bp = 1;//@todo
+                    if ($echoMode) {
+                        if ($update->message) {
+                            $sendMessageResponse = $tgDTOClient->request(
+                                $token,
+                                new SendMessageMethodDTO(
+                                    chatId: $update->message->chat->id,
+                                    text: "echo: {$update->message->text}",
+                                ),
+                            );
+                            assert($sendMessageResponse->ok === true);
+                        } else {
+                            $bp = 1;//@todo
+                        }
                     }
-                }
 
-                if ($once) {
-                    return false;
-                }
+                    if ($once) {
+                        return false;
+                    }
 
-                return true;
-            },
-            fnRetry: 5,
-            noAck: $noAck,
-            delayOnFn: $echoMode ? 1.2 : 0,
-        );
+                    return true;
+                },
+                fnRetry: 5,
+                noAck: $noAck,
+                delayOnFn: $echoMode ? 1.2 : 0,
+            );
     }
 }

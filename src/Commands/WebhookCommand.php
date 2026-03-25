@@ -21,7 +21,7 @@ class WebhookCommand extends Command
     use TokenResolverTrait;
 
     protected $signature = 'tg:webhook
-                            {token? : Telegram Bot Token}
+                            {--token= : Telegram Bot Token}
                             {--remove : Remove webhook}
                             {--url= : Webhook URL to set}
                             {--certificate= : Public key certificate file path}
@@ -31,7 +31,7 @@ class WebhookCommand extends Command
                             {--drop-pending : Drop all pending updates on set/delete}
                             {--secret-token= : Secret token for webhook requests}';
 
-    protected $description = 'Manage Telegram webhooks vy One Token';
+    protected $description = 'Manage Telegram webhooks by One Token';
 
     private const ALLOWED_UPDATES = [
         'message',
