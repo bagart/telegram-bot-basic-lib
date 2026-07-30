@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace BAGArt\TelegramBotBasic\Commands;
 
-use BAGArt\TelegramBot\TgIntegration\WebhookManager;
 use BAGArt\TelegramBot\Configs\TgBotConfig;
 use BAGArt\TelegramBot\Contracts\ApiCommunication\TgBotApiDTOClientContract;
 use BAGArt\TelegramBot\TgApi\Methods\DTO\GetMeMethodDTO;
 use BAGArt\TelegramBot\TgApi\Types\DTO\UserTypeDTO;
 use BAGArt\TelegramBot\TgApi\Types\DTO\WebhookInfoTypeDTO;
+use BAGArt\TelegramBot\TgIntegration\WebhookManager;
 use BAGArt\TelegramBotBasic\Commands\Traits\TokenResolverTrait;
 use Illuminate\Console\Command;
 use Throwable;
@@ -21,16 +21,16 @@ class WebhookCommand extends Command
 {
     use TokenResolverTrait;
 
-    protected $signature = 'tg:webhook
+    protected $signature = 'tg:tg_webhook
                             {--token= : Telegram Bot Token}
-                            {--remove : Remove webhook}
+                            {--remove : Remove tg_webhook}
                             {--url= : Webhook URL to set}
                             {--certificate= : Public key certificate file path}
-                            {--ip-address= : Fixed IP address for webhook}
+                            {--ip-address= : Fixed IP address for tg_webhook}
                             {--max-connections= : Max simultaneous connections (1-100)}
                             {--allowed-updates=* : Allowed update types}
                             {--drop-pending : Drop all pending updates on set/delete}
-                            {--secret-token= : Secret token for webhook requests}';
+                            {--secret-token= : Secret token for tg_webhook requests}';
 
     protected $description = 'Manage Telegram webhooks by One Token';
 
@@ -84,7 +84,7 @@ class WebhookCommand extends Command
         );
 
         $maxConnections = $this->resolveOption(
-            cliValue: $this->option('max-connections') !== null ? (int) $this->option('max-connections') : null,
+            cliValue: $this->option('max-connections') !== null ? (int)$this->option('max-connections') : null,
             currentValue: $currentInfo?->maxConnections,
             prompt: null,
         );
@@ -109,7 +109,7 @@ class WebhookCommand extends Command
 
             return self::SUCCESS;
         } catch (Throwable $e) {
-            $this->error("Failed to set webhook: {$e->getMessage()}");
+            $this->error("Failed to set tg_webhook: {$e->getMessage()}");
 
             return self::FAILURE;
         }
@@ -129,7 +129,7 @@ class WebhookCommand extends Command
 
             return $info;
         } catch (Throwable $e) {
-            $this->error("Failed to get webhook info: {$e->getMessage()}");
+            $this->error("Failed to get tg_webhook info: {$e->getMessage()}");
 
             return null;
         }
@@ -171,7 +171,7 @@ class WebhookCommand extends Command
 
             return self::SUCCESS;
         } catch (Throwable $e) {
-            $this->error("Failed to remove webhook: {$e->getMessage()}");
+            $this->error("Failed to remove tg_webhook: {$e->getMessage()}");
 
             return self::FAILURE;
         }

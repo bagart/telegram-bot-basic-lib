@@ -19,7 +19,7 @@ class ExampleParallelFuturesCommand extends Command
     public function handle(TgBotApiClientContract $client): int
     {
         $token = $this->argument('token');
-        $count = (int) $this->option('count');
+        $count = (int)$this->option('count');
         $config = new TgBotConfig(token: $token);
 
         $start = microtime(true);
@@ -31,11 +31,11 @@ class ExampleParallelFuturesCommand extends Command
 
         foreach ($futures as $i => $future) {
             $result = $future->await();
-            $this->line("  [{$i}] ok: " . ($result['ok'] ? 'true' : 'false'));
+            $this->line("  [{$i}] ok: ".($result['ok'] ? 'true' : 'false'));
         }
 
         $elapsed = (microtime(true) - $start) * 1000;
-        $this->info("Parallel (futures): {$count} requests in " . round($elapsed, 1) . " ms");
+        $this->info("Parallel (futures): {$count} requests in ".round($elapsed, 1)." ms");
 
         return self::SUCCESS;
     }

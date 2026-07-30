@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use BAGArt\TelegramBot\Configs\TgBotConfig;
+use BAGArt\TelegramBot\Contracts\ApiCommunication\TgBotApiDTOClientContract;
+use BAGArt\TelegramBot\TgApi\Types\DTO\UserTypeDTO;
 use BAGArt\TelegramBot\TgApi\Types\DTO\WebhookInfoTypeDTO;
 use BAGArt\TelegramBotBasic\Commands\WebhookCommand;
-use BAGArt\TelegramBot\TgApi\Types\DTO\UserTypeDTO;
-use BAGArt\TelegramBot\Contracts\ApiCommunication\TgBotApiDTOClientContract;
 use Illuminate\Console\OutputStyle;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -20,8 +20,10 @@ beforeEach(function () {
             return $this->resolveBotName($client, $token);
         }
 
-        public function exposeDisplayWebhookInfo(WebhookInfoTypeDTO $info, \BAGArt\TelegramBot\TgIntegration\WebhookManager $webhookManager): void
-        {
+        public function exposeDisplayWebhookInfo(
+            WebhookInfoTypeDTO $info,
+            \BAGArt\TelegramBot\TgIntegration\WebhookManager $webhookManager
+        ): void {
             $this->displayWebhookInfo($info, $webhookManager);
         }
     };

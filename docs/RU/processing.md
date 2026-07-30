@@ -2,7 +2,8 @@
 
 ## 1. Overview
 
-The Telegram update processing system is built as an async pipeline, supporting multiple ingestion sources and at-least-once delivery semantics.
+The Telegram update processing system is built as an async pipeline, supporting multiple ingestion sources and
+at-least-once delivery semantics.
 
 Main incoming event sources:
 
@@ -43,6 +44,7 @@ Responsibilities:
 - forward into processing pipeline
 
 Poller does NOT:
+
 - store execution state
 - wait for completion of execution
 - know the processing result
@@ -60,6 +62,7 @@ Responsibilities:
 - forward into processing pipeline
 
 Webhook does NOT:
+
 - execute business logic
 - block the HTTP response until processing completes
 - store execution state
@@ -80,13 +83,7 @@ and passed forward without distinction of source.
 
 Main pipeline:
 
-UpdateContext
-→ ProcessingDaemon
-→ InboxRouter
-→ Execution Strategy
-→ Scheduler
-→ Outbound Layer
-→ Telegram API
+UpdateContext → ProcessingDaemon → InboxRouter → Execution Strategy → Scheduler → Outbound Layer → Telegram API
 
 ---
 
@@ -154,6 +151,7 @@ Scheduler is responsible for:
 - dispatching tasks to the execution layer
 
 Scheduler does NOT:
+
 - know about the Telegram API
 - manage retry logic
 - manage ordering state
@@ -171,6 +169,7 @@ Outbound layer is responsible for:
 - response normalization
 
 Outbound does NOT:
+
 - serve as source of truth
 - store workflow state
 - make routing decisions
@@ -182,14 +181,17 @@ Outbound does NOT:
 The system supports:
 
 ### Process crash
+
 - incomplete tasks may be re-delivered
 - repeated processing is permissible
 
 ### Duplicate execution
+
 - permissible
 - must be safe (idempotent handlers)
 
 ### Network failure
+
 - retry via executor
 - no global consistency guarantees
 
@@ -215,11 +217,13 @@ Deduplication does NOT guarantee:
 The system separates states:
 
 ### Does NOT STORE:
+
 - completion of Telegram requests
 - global execution state
 - "delivered successfully" truth
 
 ### MAY STORE:
+
 - dedup keys
 - floodwait state (blockedUntil)
 - ordering coordination state (executionKey locks)
@@ -261,12 +265,14 @@ The system does NOT guarantee:
 ## 15. Design Constraints
 
 MUST:
+
 - be resilient to duplicates
 - survive process crashes
 - respect retry_after (FloodWait)
 - separate ingestion / routing / execution
 
 MUST NOT:
+
 - turn into a distributed workflow engine
 - use Redis as a source of execution truth
 - require global synchronization for correctness

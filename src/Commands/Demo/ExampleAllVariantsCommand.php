@@ -19,7 +19,7 @@ class ExampleAllVariantsCommand extends Command
     public function handle(TgBotApiClientContract $client): int
     {
         $token = $this->argument('token');
-        $count = (int) $this->option('count');
+        $count = (int)$this->option('count');
         $config = new TgBotConfig(token: $token);
 
         $this->info("Comparing request patterns with {$count} requests each:");
@@ -45,18 +45,21 @@ class ExampleAllVariantsCommand extends Command
         });
         $results[] = ['variant' => 'Parallel (futures)', 'ms' => $elapsed];
 
-        $batchSize = max(2, (int) ceil($count / 3));
-        $elapsed = $this->measure("Batch (batch={$batchSize})", function () use ($client, $config, $count, $batchSize): void {
-            foreach (array_chunk(range(0, $count - 1), $batchSize) as $indices) {
-                $futures = [];
-                foreach ($indices as $i) {
-                    $futures[$i] = $client->requestAsync($config, 'getMe');
-                }
-                foreach ($futures as $future) {
-                    $future->await();
+        $batchSize = max(2, (int)ceil($count / 3));
+        $elapsed = $this->measure(
+            "Batch (batch={$batchSize})",
+            function () use ($client, $config, $count, $batchSize): void {
+                foreach (array_chunk(range(0, $count - 1), $batchSize) as $indices) {
+                    $futures = [];
+                    foreach ($indices as $i) {
+                        $futures[$i] = $client->requestAsync($config, 'getMe');
+                    }
+                    foreach ($futures as $future) {
+                        $future->await();
+                    }
                 }
             }
-        });
+        );
         $results[] = ['variant' => "Batch (batch={$batchSize})", 'ms' => $elapsed];
 
         $this->newLine();
@@ -65,7 +68,7 @@ class ExampleAllVariantsCommand extends Command
             array_map(fn (array $r, int $i) => [
                 $r['variant'],
                 round($r['ms'], 1),
-                $i === 0 ? '1.0x' : round($results[0]['ms'] / $r['ms'], 2) . 'x',
+                $i === 0 ? '1.0x' : round($results[0]['ms'] / $r['ms'], 2).'x',
             ], $results, array_keys($results)),
         );
 
@@ -78,7 +81,7 @@ class ExampleAllVariantsCommand extends Command
         $fn();
         $elapsed = (microtime(true) - $start) * 1000;
 
-        $this->line("  {$label}: " . round($elapsed, 1) . " ms");
+        $this->line("  {$label}: ".round($elapsed, 1)." ms");
 
         return $elapsed;
     }

@@ -54,7 +54,7 @@ class TgPollerCommand extends Command
             return self::FAILURE;
         }
 
-        $timeout = (int) $this->option('timeout');
+        $timeout = (int)$this->option('timeout');
         $once = $this->option('once');
         $echoMode = $this->option('echo');
         $showMode = $this->option('show');
@@ -76,7 +76,7 @@ class TgPollerCommand extends Command
             }
         } catch (Throwable $e) {
             $this->dbg($e);
-            $this->error("Failed to remove webhook: {$e->getMessage()}; ".$e::class);
+            $this->error("Failed to remove tg_webhook: {$e->getMessage()}; ".$e::class);
 
             return self::FAILURE;
         }

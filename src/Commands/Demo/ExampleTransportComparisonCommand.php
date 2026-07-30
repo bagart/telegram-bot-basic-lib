@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace BAGArt\TelegramBotBasic\Commands\Demo;
 
-use BAGArt\ASKClient\Contracts\Transporting\HttpTransportContract;
-use BAGArt\ASKClient\Request\ASKHttpRequest;
-use BAGArt\ASKClient\HttpTransporting\HttpTransportAdapters\ASKSocketTransportAdapter;
-use BAGArt\ASKClient\HttpTransporting\HttpTransportAdapters\CurlMultiTransportAdapter;
-use BAGArt\ASKClient\HttpTransporting\HttpTransportAdapters\GuzzleTransportAdapter;
+use BAGArt\ASKClient\Contracts\Transport\HttpTransportContract;
+use BAGArt\ASKClient\Dto\ASKHttpRequest;
+use BAGArt\ASKClient\Transport\Adapters\ASKSocketTransportAdapter;
+use BAGArt\ASKClient\Transport\Adapters\CurlMultiTransportAdapter;
+use BAGArt\ASKClient\Transport\Adapters\GuzzleTransportAdapter;
 use Illuminate\Console\Command;
 
 class ExampleTransportComparisonCommand extends Command
@@ -22,7 +22,7 @@ class ExampleTransportComparisonCommand extends Command
     public function handle(): int
     {
         $token = $this->argument('token');
-        $count = (int) $this->option('count');
+        $count = (int)$this->option('count');
 
         $this->info("Comparing transports with {$count} parallel getMe requests each:");
         $this->newLine();
@@ -52,7 +52,7 @@ class ExampleTransportComparisonCommand extends Command
             array_map(fn (array $r) => [
                 $r['transport'],
                 round($r['ms'], 1),
-                round($r['ms'] / min(array_column($results, 'ms')), 2) . 'x',
+                round($r['ms'] / min(array_column($results, 'ms')), 2).'x',
             ], $results),
         );
 
@@ -88,7 +88,7 @@ class ExampleTransportComparisonCommand extends Command
         }
 
         $elapsed = (microtime(true) - $start) * 1000;
-        $this->line("  {$label}: " . round($elapsed, 1) . " ms" . ($errors ? " ({$errors} errors)" : ''));
+        $this->line("  {$label}: ".round($elapsed, 1)." ms".($errors ? " ({$errors} errors)" : ''));
 
         return $elapsed;
     }

@@ -20,8 +20,8 @@ class ExampleParallelBatchCommand extends Command
     public function handle(TgBotApiClientContract $client): int
     {
         $token = $this->argument('token');
-        $count = (int) $this->option('count');
-        $batchSize = (int) $this->option('batch');
+        $count = (int)$this->option('count');
+        $batchSize = (int)$this->option('batch');
         $config = new TgBotConfig(token: $token);
 
         $start = microtime(true);
@@ -38,15 +38,15 @@ class ExampleParallelBatchCommand extends Command
 
             foreach ($futures as $i => $future) {
                 $result = $future->await();
-                $this->line("  batch[{$batchIndex}] req[{$i}] ok: " . ($result['ok'] ? 'true' : 'false'));
+                $this->line("  batch[{$batchIndex}] req[{$i}] ok: ".($result['ok'] ? 'true' : 'false'));
             }
 
             $batchElapsed = (microtime(true) - $batchStart) * 1000;
-            $this->line("  batch[{$batchIndex}] done in " . round($batchElapsed, 1) . " ms");
+            $this->line("  batch[{$batchIndex}] done in ".round($batchElapsed, 1)." ms");
         }
 
         $elapsed = (microtime(true) - $start) * 1000;
-        $this->info("Batch parallel (batch={$batchSize}): {$count} requests in " . round($elapsed, 1) . " ms");
+        $this->info("Batch parallel (batch={$batchSize}): {$count} requests in ".round($elapsed, 1)." ms");
 
         return self::SUCCESS;
     }

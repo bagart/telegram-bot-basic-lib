@@ -2,7 +2,8 @@
 
 ## 1. Overview
 
-The Telegram update processing system is an asynchronous pipeline that supports multiple ingestion sources and follows an at-least-once delivery model.
+The Telegram update processing system is an asynchronous pipeline that supports multiple ingestion sources and follows
+an at-least-once delivery model.
 
 Incoming events may originate from:
 
@@ -82,13 +83,7 @@ and passed further through the same pipeline regardless of source.
 
 The main processing pipeline is:
 
-UpdateContext
-→ ProcessingDaemon
-→ InboxRouter
-→ Execution Strategy
-→ Scheduler
-→ Outbound Layer
-→ Telegram API
+UpdateContext → ProcessingDaemon → InboxRouter → Execution Strategy → Scheduler → Outbound Layer → Telegram API
 
 ---
 
@@ -186,14 +181,17 @@ The outbound layer does NOT:
 The system supports:
 
 ### Process crash
+
 - unfinished tasks may be redelivered
 - reprocessing is expected and safe
 
 ### Duplicate execution
+
 - allowed
 - must be idempotent
 
 ### Network failure
+
 - handled via retry mechanisms
 - no global consistency guarantees
 
@@ -219,11 +217,13 @@ Deduplication does NOT guarantee:
 The system explicitly separates state responsibilities:
 
 ### NOT STORED
+
 - Telegram execution completion state
 - global execution truth
 - "delivered successfully" guarantees
 
 ### MAY BE STORED
+
 - deduplication keys
 - flood-wait state (blockedUntil)
 - ordering coordination state (executionKey locks)
@@ -265,12 +265,14 @@ The system does NOT guarantee:
 ## 15. Design Constraints
 
 MUST:
+
 - tolerate duplicate events
 - survive process crashes
 - respect Telegram retry_after (FloodWait)
 - separate ingestion, routing, and execution responsibilities
 
 MUST NOT:
+
 - evolve into a distributed workflow engine
 - use Redis as a source of truth for execution state
 - require global synchronization for correctness
