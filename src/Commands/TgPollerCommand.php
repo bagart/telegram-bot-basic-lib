@@ -5,22 +5,18 @@ declare(strict_types=1);
 namespace BAGArt\TelegramBotBasic\Commands;
 
 use BAGArt\AsyncKernel\AsyncKernel;
-use BAGArt\AsyncKernel\Contracts\ASKSchedulerContract;
 use BAGArt\AsyncKernel\Drivers\ASKFiberScheduler;
 use BAGArt\AsyncKernel\Wrappers\ASKLogWrapper;
 use BAGArt\TelegramBot\Configs\TgBotConfig;
 use BAGArt\TelegramBot\Configs\TgPollerConfig;
-use BAGArt\TelegramBot\Configs\TgServiceConfig;
-use BAGArt\TelegramBot\Contracts\ApiCommunication\TgBotApiClientContract;
-use BAGArt\TelegramBot\Contracts\ApiCommunication\TgBotApiDTOClientContract;
-use BAGArt\TelegramBot\Contracts\TgApi\TgApiTypeDTOContract;
-use BAGArt\TelegramBot\Exceptions\TgApiUserBreakException;
-use BAGArt\TelegramBot\TgApi\Methods\DTO\SendMessageMethodDTO;
-use BAGArt\TelegramBot\TgApi\Types\DTO\UpdateTypeDTO;
 use BAGArt\TelegramBot\TgIntegration\WebhookManager;
+use BAGArt\TelegramBotBasic\Commands\Processors\ConsoleEchoUpdateProcessor;
 use BAGArt\TelegramBotBasic\Commands\Traits\ArtisanExtraTrait;
 use BAGArt\TelegramBotBasic\Commands\Traits\LongPollingCommandTrait;
 use BAGArt\TelegramBotBasic\Commands\Traits\TokenResolverTrait;
+use BAGArt\TelegramBot\Contracts\ApiCommunication\TgBotApiClientContract;
+use BAGArt\TelegramBot\Contracts\ApiCommunication\TgBotApiDTOClientContract;
+use BAGArt\TelegramBot\Wrappers\Wrappers\TgOutputWrapper;
 use Illuminate\Console\Command;
 use Throwable;
 
@@ -86,21 +82,14 @@ class TgPollerCommand extends Command
 
         $configPoller = $this->buildConfigPoller(
             token: $token,
-            fn: function (
-                TgApiTypeDTOContract $dto,
-                TgServiceConfig $config,
-                ?string $action = null,
-                ?ASKSchedulerContract $scheduler = null,
-            ) use (&$configPollerRef, $tgDTOClient, $token, $echoMode, $showMode, $once): void {
-                $this->processPollUpdate(
-                    dto: $dto,
-                    tgDTOClient: $tgDTOClient,
-                    botConfig: new TgBotConfig(token: $token),
-                    echoMode: $echoMode,
-                    showMode: $showMode,
-                    once: $once,
-                );
-            },
+            updateProcessor: new ConsoleEchoUpdateProcessor(
+                dtoClient: $tgDTOClient,
+                output: new TgOutputWrapper($this->output),
+                botConfig: new TgBotConfig(token: $token),
+                echoMode: $echoMode,
+                showMode: $showMode,
+                once: $once,
+            ),
             logger: $logger,
             pollerConfig: new TgPollerConfig(
                 timeout: $timeout,
@@ -119,40 +108,5 @@ class TgPollerCommand extends Command
         $asyncKernel->run();
 
         return self::SUCCESS;
-    }
-
-    private function processPollUpdate(
-        TgApiTypeDTOContract $dto,
-        TgBotApiDTOClientContract $tgDTOClient,
-        TgBotConfig $botConfig,
-        bool $echoMode,
-        bool $showMode,
-        bool $once,
-    ): void {
-        $update = $dto;
-        assert($update instanceof UpdateTypeDTO);
-
-        if ($showMode && $update->message) {
-            $this->line("\t{$update->message->chat->id}: {$update->message->text}");
-        } else {
-            $bp = 1; // @todo
-        }
-
-        if ($echoMode && $update->message) {
-            $sendMessageResponse = $tgDTOClient->request(
-                $botConfig,
-                new SendMessageMethodDTO(
-                    chatId: $update->message->chat->id,
-                    text: "echo: {$update->message->text}",
-                ),
-            );
-            assert($sendMessageResponse->ok === true);
-        } else {
-            $bp = 1; // @todo
-        }
-
-        if ($once) {
-            throw new TgApiUserBreakException('once');
-        }
     }
 }

@@ -18,7 +18,7 @@ All commands are registered via `TelegramBotBasicServiceProvider`.
 Laravel App
         │
         ▼
-telegram-bot-management-lib  (multi-bot commands, models)
+telegram-bot-management  (multi-bot commands, models)
         │
         ▼
 telegram-bot-basic-lib  (single-bot artisan commands, traits)

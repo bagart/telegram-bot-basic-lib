@@ -10,6 +10,7 @@ use BAGArt\TelegramBot\ApiCommunication\Polling\TgPollerDaemon;
 use BAGArt\TelegramBot\Configs\TgBotConfig;
 use BAGArt\TelegramBot\Configs\TgPollerConfig;
 use BAGArt\TelegramBot\Configs\TgServiceConfig;
+use BAGArt\TelegramBot\Contracts\Processing\Processors\TgTypeDTOProcessorContract;
 use BAGArt\TelegramBot\Exceptions\TgApiUserBreakException;
 use BAGArt\TelegramBot\Processing\RegisteredUpdateProcessorSelector;
 use BAGArt\TelegramBot\TgApi\Methods\DTO\GetUpdatesMethodDTO;
@@ -26,7 +27,7 @@ trait LongPollingCommandTrait
 
     private function buildConfigPoller(
         string $token,
-        callable $fn,
+        TgTypeDTOProcessorContract $updateProcessor,
         ASKLogWrapper $logger,
         bool $isStrictOrdered = false,
         ?TgPollerConfig $pollerConfig = null,
@@ -41,7 +42,7 @@ trait LongPollingCommandTrait
 
         $this->botSetup->processorRegistry->register(
             UpdateTypeDTO::class,
-            $fn,
+            $updateProcessor,
         );
 
         $updateProcessorSelector = new RegisteredUpdateProcessorSelector(
