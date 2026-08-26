@@ -37,5 +37,28 @@
     },
     "scripts": {
         "test": "composer exec pest tests --colors=always"
+    },
+    "repositories": {
+        "telegram-bot-lib": {
+            "type": "path",
+            "url": "../telegram-bot-lib"
+        },
+        "php-async-kernel-lib": {
+            "type": "path",
+            "url": "../php-async-kernel-lib"
+        },
+        "php-async-kernel-client": {
+            "type": "path",
+            "url": "../php-async-kernel-client"
+        },
+        "baseline": {
+            "type": "path",
+            "url": "../telegram-devops-baseline"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "bagart/telegram-devops-baseline": "@dev"
     }
 }
