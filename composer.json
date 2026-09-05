@@ -1,6 +1,6 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "bagart/telegram-bot-basic-lib",
+    "name": "bagart/telegram-bot-lib-basic",
     "description": "Telegram Bot basic commands library",
     "type": "library",
     "license": "MIT",
@@ -53,12 +53,12 @@
         },
         "baseline": {
             "type": "path",
-            "url": "../telegram-devops-baseline"
+            "url": "../telegram-platform-devops-baseline"
         }
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require-dev": {
-        "bagart/telegram-devops-baseline": "@dev"
+        "bagart/telegram-platform-devops-baseline": "@dev"
     }
 }
