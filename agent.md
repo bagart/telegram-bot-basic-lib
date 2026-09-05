@@ -1,6 +1,6 @@
 # Telegram Bot Basic Lib — Architecture Context
 
-We are working on `bagart/telegram-bot-basic-lib`.
+We are working on `bagart/telegram-bot-lib-basic`.
 
 This library provides Artisan commands for Telegram bot operations:
 long polling, webhook management, identity checks, interactive chatting, and demo commands.
@@ -18,10 +18,10 @@ All commands are registered via `TelegramBotBasicServiceProvider`.
 Laravel App
         │
         ▼
-telegram-bot-management  (multi-bot commands, models)
+telegram-platform-management  (multi-bot commands, models)
         │
         ▼
-telegram-bot-basic-lib  (single-bot artisan commands, traits)
+telegram-bot-lib-basic  (single-bot artisan commands, traits)
         │
         ▼
 telegram-bot-lib  (bot API, processing, outbound, webhook)
